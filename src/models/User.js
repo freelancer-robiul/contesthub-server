@@ -21,7 +21,7 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Password is required"],
       minlength: 6,
-      select: false, // normally don't return password
+      select: false,
     },
     photoURL: {
       type: String,
@@ -30,20 +30,16 @@ const userSchema = new Schema(
     bio: {
       type: String,
       default: "",
-      trim: true,
     },
     address: {
       type: String,
       default: "",
-      trim: true,
     },
-    // MAIN PART: ROLE FIELD
     role: {
       type: String,
       enum: ["user", "creator", "admin"],
       default: "user",
     },
-    // simple stats for dashboard
     participatedCount: {
       type: Number,
       default: 0,
@@ -53,9 +49,7 @@ const userSchema = new Schema(
       default: 0,
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 const User = mongoose.model("User", userSchema);

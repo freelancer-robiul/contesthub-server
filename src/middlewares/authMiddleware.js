@@ -1,16 +1,8 @@
 // src/middlewares/authMiddleware.js
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-dotenv.config();
 
-/**
- * Protect middleware
- * - Checks Authorization header: "Bearer token"
- * - Verifies JWT
- * - Attaches user info to req.user
- */
 export const protect = (req, res, next) => {
-  let token;
+  let token = null;
 
   if (
     req.headers.authorization &&
@@ -20,25 +12,21 @@ export const protect = (req, res, next) => {
   }
 
   if (!token) {
-    return res.status(401).json({
-      message: "Not authorized, no token provided",
-    });
+    return res.status(401).json({ message: "Not authorized, token missing" });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // payload e jeta send korbo (id, email, role), oita ekhane thakbe
     req.user = {
       id: decoded.id,
       email: decoded.email,
       role: decoded.role,
+      name: decoded.name || "",
     };
 
     next();
-  } catch (error) {
-    return res.status(401).json({
-      message: "Not authorized, token failed",
-    });
+  } catch (err) {
+    return res.status(401).json({ message: "Not authorized, token invalid" });
   }
 };
