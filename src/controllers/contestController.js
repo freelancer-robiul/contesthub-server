@@ -11,7 +11,8 @@ export const getAllContests = async (req, res) => {
 
   const filter = {};
 
-  if (status) {
+  // 🔥 status === "all" হলে কোনো filter লাগাবো না
+  if (status && status !== "all") {
     filter.status = status;
   }
 
