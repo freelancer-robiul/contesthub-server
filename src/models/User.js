@@ -1,39 +1,31 @@
 // src/models/User.js
 import mongoose from "mongoose";
 
-const { Schema } = mongoose;
-
-const userSchema = new Schema(
+const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Name is required"],
+      required: true,
       trim: true,
     },
     email: {
       type: String,
-      required: [true, "Email is required"],
+      required: true,
       unique: true,
       lowercase: true,
       trim: true,
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
+      // Google sign-in user দের জন্য password null থাকতে পারে
+      required: false,
       minlength: 6,
-      select: false,
+      select: false, // normal query তে password আসবে না
     },
     photoURL: {
       type: String,
-      default: "",
-    },
-    bio: {
-      type: String,
-      default: "",
-    },
-    address: {
-      type: String,
-      default: "",
+      default:
+        "https://i.ibb.co/3sWZyPc/default-avatar.png",
     },
     role: {
       type: String,
@@ -47,6 +39,11 @@ const userSchema = new Schema(
     winCount: {
       type: Number,
       default: 0,
+    },
+    provider: {
+      type: String,
+      enum: ["local", "google"],
+      default: "local",
     },
   },
   { timestamps: true }

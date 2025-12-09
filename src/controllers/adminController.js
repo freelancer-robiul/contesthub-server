@@ -7,6 +7,7 @@ import User from "../models/User.js";
  */
 export const getAllUsers = async (req, res) => {
   const users = await User.find({}, "-password").sort({ createdAt: -1 });
+
   res.json(users);
 };
 
@@ -23,15 +24,10 @@ export const updateUserRole = async (req, res) => {
     return res.status(400).json({ message: "Invalid role" });
   }
 
-  // নিজের role block করতে চাইলে এখানে check যোগ করতে পারো
-  if (req.user.id === id && role !== "admin") {
-    return res
-      .status(400)
-      .json({ message: "You cannot change your own admin role" });
-  }
+  // চাইলে এখানে নিজের admin role ডিমোট করা ব্লক করতে পারো
+  // if (req.user.id === id && role !== "admin") {...}
 
   const user = await User.findById(id);
-
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
@@ -47,6 +43,8 @@ export const updateUserRole = async (req, res) => {
       email: updated.email,
       photoURL: updated.photoURL,
       role: updated.role,
+      participatedCount: updated.participatedCount,
+      winCount: updated.winCount,
     },
   });
 };

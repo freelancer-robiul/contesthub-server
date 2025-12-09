@@ -1,65 +1,46 @@
 // src/models/Contest.js
 import mongoose from "mongoose";
 
-const { Schema } = mongoose;
-
-const winnerSchema = new Schema(
-  {
-    userId: { type: Schema.Types.ObjectId, ref: "User" },
-    name: String,
-    photoURL: String,
-  },
-  { _id: false }
-);
-
-const contestSchema = new Schema(
+const contestSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Contest name is required"],
-      trim: true,
+      required: true,
     },
     image: {
       type: String,
-      required: [true, "Contest image is required"],
+      required: true,
     },
     description: {
       type: String,
-      required: [true, "Contest description is required"],
+      required: true,
     },
     price: {
+      // entry fee
       type: Number,
-      required: [true, "Entry fee is required"],
-      default: 0,
+      required: true,
     },
     prizeMoney: {
       type: Number,
-      required: [true, "Prize money is required"],
-      default: 0,
+      required: true,
     },
     taskInstructions: {
       type: String,
-      required: [true, "Task instruction is required"],
+      required: true,
     },
     contestType: {
       type: String,
-      enum: [
-        "image-design",
-        "article-writing",
-        "business-idea",
-        "game-review",
-        "other",
-      ],
-      default: "other",
-    },
-    tags: {
-      type: [String],
-      default: [],
+      default: "other", // Image Design, Article, Game Review etc.
     },
     deadline: {
       type: Date,
-      required: [true, "Deadline is required"],
+      required: true,
     },
+    tags: [
+      {
+        type: String,
+      },
+    ],
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],
@@ -70,11 +51,28 @@ const contestSchema = new Schema(
       default: 0,
     },
     creator: {
-      id: { type: Schema.Types.ObjectId, ref: "User" },
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
       name: String,
       email: String,
     },
-    winner: winnerSchema,
+    // Winner info (declare winner করলে এগুলো fill হবে)
+    winner: {
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      name: String,
+      email: String,
+      photoURL: String,
+      submissionId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Submission",
+      },
+      announcedAt: Date,
+    },
   },
   { timestamps: true }
 );

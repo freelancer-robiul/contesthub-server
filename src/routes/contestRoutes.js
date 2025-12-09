@@ -1,87 +1,53 @@
 // src/routes/contestRoutes.js
 import express from "express";
-import asyncHandler from "express-async-handler";
 import { protect } from "../middlewares/authMiddleware.js";
 import { requireRole } from "../middlewares/roleMiddleware.js";
-
 import {
   getAllContests,
+  getPopularContests,
   getContestById,
-  getMyContests,
   createContest,
   updateContest,
   deleteContest,
+  getMyContests,
   approveContest,
   rejectContest,
 } from "../controllers/contestController.js";
 
 const router = express.Router();
 
-/**
- * PUBLIC ROUTES
- */
+// Public routes
+router.get("/", getAllContests); // ?page=&limit=&type=&search=
+router.get("/popular", getPopularContests);
 
-// GET /api/v1/contests  -> all approved contests (or by query)
-router.get("/", asyncHandler(getAllContests));
+// Creator/Admin – নিজের contests
+router.get("/mine", protect, requireRole("creator", "admin"), getMyContests);
 
-/**
- * CREATOR / ADMIN ROUTES
- * NOTE: /mine অবশ্যই /:id এর উপরে থাকবে
- */
-
-// GET /api/v1/contests/mine -> logged-in creator/admin's contests
-router.get(
-  "/mine",
-  protect,
-  requireRole("creator", "admin"),
-  asyncHandler(getMyContests)
-);
-
-// GET /api/v1/contests/:id -> single contest details (public)
-router.get("/:id", asyncHandler(getContestById));
-
-// POST /api/v1/contests -> create contest
-router.post(
-  "/",
-  protect,
-  requireRole("creator", "admin"),
-  asyncHandler(createContest)
-);
-
-// PUT /api/v1/contests/:id -> update contest
-router.put(
-  "/:id",
-  protect,
-  requireRole("creator", "admin"),
-  asyncHandler(updateContest)
-);
-
-// DELETE /api/v1/contests/:id -> delete contest
-router.delete(
-  "/:id",
-  protect,
-  requireRole("creator", "admin"),
-  asyncHandler(deleteContest)
-);
-
-/**
- * ADMIN ONLY ROUTES
- */
-
-// PATCH /api/v1/contests/:id/approve
+// Admin approve / reject
 router.patch(
   "/:id/approve",
   protect,
   requireRole("admin"),
-  asyncHandler(approveContest)
+  approveContest
 );
-
-// PATCH /api/v1/contests/:id/reject
 router.patch(
   "/:id/reject",
   protect,
   requireRole("admin"),
-  asyncHandler(rejectContest)
+  rejectContest
+);
+
+// Single contest
+router.get("/:id", getContestById);
+
+// Create / update / delete
+router.post("/", protect, requireRole("creator", "admin"), createContest);
+router.put("/:id", protect, requireRole("creator", "admin"), updateContest);
+router.delete(
+  "//:id",
+  protect,
+  requireRole("creator", "admin"),
+  deleteContest
 );
 
 export default router;
