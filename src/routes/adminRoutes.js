@@ -1,22 +1,23 @@
 // src/routes/adminRoutes.js
 import express from "express";
-import asyncHandler from "express-async-handler";
 import { protect } from "../middlewares/authMiddleware.js";
 import { requireRole } from "../middlewares/roleMiddleware.js";
 import {
   getAllUsers,
   updateUserRole,
+  getAdminContests,
 } from "../controllers/adminController.js";
 
 const router = express.Router();
 
-// সব admin route এর আগে auth + role check
+// সব admin route-এর আগে protect + admin check
 router.use(protect, requireRole("admin"));
 
-// GET /api/v1/admin/users
-router.get("/users", asyncHandler(getAllUsers));
+// USERS
+router.get("/users", getAllUsers);
+router.patch("/users/:id/role", updateUserRole);
 
-// PATCH /api/v1/admin/users/:id/role
-router.patch("/users/:id/role", asyncHandler(updateUserRole));
+// CONTESTS
+router.get("/contests", getAdminContests);
 
 export default router;

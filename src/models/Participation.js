@@ -13,7 +13,7 @@ const participationSchema = new mongoose.Schema(
       ref: "Contest",
       required: true,
     },
-    amount: {
+    amountPaid: {
       type: Number,
       required: true,
       min: 0,
@@ -31,7 +31,6 @@ const participationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// এক user একই contest এ দুইবার join করতে পারবে না
 participationSchema.index({ user: 1, contest: 1 }, { unique: true });
 
 const Participation = mongoose.model("Participation", participationSchema);
